@@ -36,7 +36,7 @@ func _process(delta):
 	
 	# jumping / rolling and more (note, you'll want to adjust the other actions if your character does something different)
 	if parent.any_action_pressed():
-		if (parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] > 0):
+		if (parent.movement2d.x == 0 and parent.inputs[parent.INPUTS.YINPUT] > 0):
 			parent.animator.play("spinDash")
 			parent.sfx[2].play()
 			parent.sfx[2].pitch_scale = 1
@@ -44,7 +44,7 @@ func _process(delta):
 			parent.animator.play("spinDash")
 			parent.set_state(parent.STATES.SPINDASH)
 		# peelout (Sonic only)
-		elif (parent.movement.x == 0 and parent.inputs[parent.INPUTS.YINPUT] < 0 and parent.character == parent.CHARACTERS.SONIC):
+		elif (parent.movement2d.x == 0 and parent.inputs[parent.INPUTS.YINPUT] < 0 and parent.character == parent.CHARACTERS.SONIC):
 			parent.sfx[2].play()
 			parent.sfx[2].pitch_scale = 1
 			parent.spindashPower = 0
@@ -57,7 +57,7 @@ func _process(delta):
 		return null
 	
 	if parent.ground and !skid:
-		if parent.movement.x == 0:
+		if parent.movement2d.x == 0:
 			if (parent.inputs[parent.INPUTS.YINPUT] > 0):
 				lookTimer = max(0,lookTimer+delta*0.5)
 				if parent.lastActiveAnimation != "crouch":
@@ -152,11 +152,11 @@ func _process(delta):
 							else:
 								parent.animator.play("edge1")
 					
-		elif sign(parent.pushingWall) == sign(parent.movement.x) and parent.pushingWall != 0:
+		elif sign(parent.pushingWall) == sign(parent.movement2d.x) and parent.pushingWall != 0:
 			parent.animator.play("push")
-		elif(abs(parent.movement.x) < 6*60):
+		elif(abs(parent.movement2d.x) < 6*60):
 			parent.animator.play("walk")
-		elif(abs(parent.movement.x) < 10*60):
+		elif(abs(parent.movement2d.x) < 10*60):
 			parent.animator.play("run")
 		else:
 			parent.animator.play("peelOut")
@@ -170,8 +170,8 @@ func _process(delta):
 	
 	if parent.inputs[parent.INPUTS.XINPUT] != 0 and !skid:
 		parent.direction = parent.inputs[parent.INPUTS.XINPUT]
-	elif parent.movement.x != 0 and skid:
-		parent.direction = sign(parent.movement.x)
+	elif parent.movement2d.x != 0 and skid:
+		parent.direction = sign(parent.movement2d.x)
 	
 	# water running
 	parent.action_water_run_handle()
@@ -180,7 +180,7 @@ func _process(delta):
 func _physics_process(delta):
 	
 	# rolling
-	if (parent.inputs[parent.INPUTS.YINPUT] == 1 and parent.inputs[parent.INPUTS.XINPUT] == 0 and abs(parent.movement.x) > 0.5*60):
+	if (parent.inputs[parent.INPUTS.YINPUT] == 1 and parent.inputs[parent.INPUTS.XINPUT] == 0 and abs(parent.movement2d.x) > 0.5*60):
 		parent.set_state(parent.STATES.ROLL)
 		parent.animator.play("roll")
 		parent.sfx[1].play()
@@ -193,7 +193,7 @@ func _physics_process(delta):
 		return null
 	
 	# skidding
-	if !skid and sign(parent.inputs[parent.INPUTS.XINPUT]) != sign(parent.movement.x) and abs(parent.movement.x) >= 5*60 and parent.inputs[parent.INPUTS.XINPUT] != 0 and parent.horizontalLockTimer <= 0:
+	if !skid and sign(parent.inputs[parent.INPUTS.XINPUT]) != sign(parent.movement2d.x) and abs(parent.movement2d.x) >= 5*60 and parent.inputs[parent.INPUTS.XINPUT] != 0 and parent.horizontalLockTimer <= 0:
 		skid = true
 		parent.sfx[19].play()
 		parent.animator.play("skid")
@@ -202,17 +202,17 @@ func _physics_process(delta):
 	elif skid:
 		var inputX = parent.inputs[parent.INPUTS.XINPUT]
 		
-		if round(parent.movement.x/200) == 0 and sign(inputX) != sign(parent.movement.x):
+		if round(parent.movement2d.x/200) == 0 and sign(inputX) != sign(parent.movement2d.x):
 			if parent.animator.has_animation("skidTurn"):
 				parent.animator.play("skidTurn")
 		
-		if !parent.animator.is_playing() or inputX == sign(parent.movement.x):
-			skid = (round(parent.movement.x) != 0 and inputX != sign(parent.movement.x) and inputX != 0)
+		if !parent.animator.is_playing() or inputX == sign(parent.movement2d.x):
+			skid = (round(parent.movement2d.x) != 0 and inputX != sign(parent.movement2d.x) and inputX != 0)
 		
 	
 	parent.sprite.flip_h = (parent.direction < 0)
 	
-	parent.movement.y = min(parent.movement.y,0)
+	parent.movement2d.y = min(parent.movement2d.y,0)
 	
 	# Camera look
 	if abs(lookTimer) >= 1:
@@ -220,14 +220,14 @@ func _physics_process(delta):
 	
 	# Apply slope factor
 	# ignore this if not moving for sonic 1 style slopes
-	parent.movement.x += (parent.slp*sin(parent.angle-parent.gravityAngle))/GlobalFunctions.div_by_delta(delta)
+	parent.movement2d.x += (parent.slp*sin(parent.angle-parent.gravityAngle))/GlobalFunctions.div_by_delta(delta)
 	
 	var calcAngle = rad_to_deg(parent.angle-parent.gravityAngle)
 	if (calcAngle < 0):
 		calcAngle += 360
 	
 	# if speed below fall speed, either drop or slide down slopes
-	if (abs(parent.movement.x) < parent.fall and calcAngle >= 45 and calcAngle <= 315):
+	if (abs(parent.movement2d.x) < parent.fall and calcAngle >= 45 and calcAngle <= 315):
 		if (round(calcAngle) >= 90 and round(calcAngle) <= 270):
 			parent.disconect_from_floor()
 		else:

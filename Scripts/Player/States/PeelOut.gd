@@ -31,7 +31,7 @@ func _process(delta):
 		parent.lock_camera((parent.spindashPower+4)/60.0)
 		
 		# Release
-		parent.movement.x = speedCalc*parent.direction
+		parent.movement2d.x = speedCalc*parent.direction
 		parent.sfx[3].play()
 		parent.sfx[2].stop()
 		parent.peelOutCharge = 0.0
@@ -40,4 +40,4 @@ func _process(delta):
 func _physics_process(delta):
 	# Gravity
 	if !parent.ground:
-		parent.movement.y += parent.grv/GlobalFunctions.div_by_delta(delta)
+		parent.movement2d.y += parent.grv/GlobalFunctions.div_by_delta(delta)

@@ -4,12 +4,12 @@ var activated = true
 
 func _process(_delta):
 	if activated and !parent.isSuper:
-		var remVel = parent.movement
+		var remVel = parent.movement2d
 		var lastAnim = parent.animator.current_animation
 		# hide shield
 		parent.shieldSprite.visible = false
 		# set movement to 0
-		parent.movement = Vector2.ZERO
+		parent.movement2d = Vector2.ZERO
 		activated = false
 		
 		# play super animation
@@ -34,7 +34,7 @@ func _process(_delta):
 		if parent.character == parent.CHARACTERS.SONIC:
 			parent.sprite.texture = parent.superSprite
 		# reset velocity to memory
-		parent.movement = remVel
+		parent.movement2d = remVel
 		parent.isSuper = true
 		parent.switch_physics()
 		parent.supTime = 1

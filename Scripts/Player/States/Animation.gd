@@ -16,7 +16,7 @@ func _process(delta):
 		# get next pipe point
 		var point = pipe.global_position+pipe.get_point_position(pipePoint)
 		# set movement
-		parent.movement = parent.global_position.direction_to(point)
+		parent.movement2d = parent.global_position.direction_to(point)
 		parent.global_position = parent.global_position.move_toward(point,pipe.speed*60*delta)
 		parent.translate = true
 		
@@ -31,7 +31,7 @@ func _process(delta):
 			else:
 				# release the player if no other point can be found
 				parent.set_state(parent.STATES.ROLL)
-				parent.movement = (point-(pipe.global_position+pipe.get_point_position(pipePoint-1))).normalized()*getPipeSpeed*60.0
+				parent.movement2d = (point-(pipe.global_position+pipe.get_point_position(pipePoint-1))).normalized()*getPipeSpeed*60.0
 				parent.global_position = point
 				parent.translate = false
 				parent.sfx[3].play()

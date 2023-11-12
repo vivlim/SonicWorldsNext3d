@@ -13,11 +13,11 @@ func _physics_process(delta):
 	# set direction
 	if parent.inputs[parent.INPUTS.XINPUT] != 0:
 		parent.direction = parent.inputs[parent.INPUTS.XINPUT]
-	elif parent.movement.x != 0:
-		parent.direction = sign(parent.movement.x)
+	elif parent.movement2d.x != 0:
+		parent.direction = sign(parent.movement2d.x)
 	
 	# set to max speed based on direction
-	parent.movement.x = parent.top*parent.direction
+	parent.movement2d.x = parent.top*parent.direction
 	
 	# flip sprite based on direction
 	parent.sprite.flip_h = (parent.direction < 0)

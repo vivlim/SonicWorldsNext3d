@@ -15,16 +15,16 @@ func _physics_process(delta):
 	if !climbUp:
 		
 		# climbing
-		parent.movement.y = (parent.inputs[parent.INPUTS.YINPUT]+int(parent.isSuper)*sign(parent.inputs[parent.INPUTS.YINPUT]))*60
+		parent.movement2d.y = (parent.inputs[parent.INPUTS.YINPUT]+int(parent.isSuper)*sign(parent.inputs[parent.INPUTS.YINPUT]))*60
 		
 		# check vertically (sometimes clinging can cause clipping)
-		if parent.movement.y == 0:
-			parent.movement.y = -1
+		if parent.movement2d.y == 0:
+			parent.movement2d.y = -1
 			parent.update_sensors()
 			parent.verticalSensorLeft.force_raycast_update()
 			parent.verticalSensorRight.force_raycast_update()
 			if !parent.verticalSensorLeft.is_colliding() and !parent.verticalSensorRight.is_colliding():
-				parent.movement.y = 0
+				parent.movement2d.y = 0
 		
 			
 		# go to normal if on floor
@@ -44,7 +44,7 @@ func _physics_process(delta):
 		
 		# check to climb
 		if !parent.horizontalSensor.is_colliding():
-			parent.movement = Vector2.ZERO
+			parent.movement2d = Vector2.ZERO
 			parent.animator.speed_scale = 1
 			parent.set_state(parent.STATES.GLIDE,parent.currentHitbox.NORMAL)
 			return false
@@ -58,7 +58,7 @@ func _physics_process(delta):
 		# check if the player can climb on top of the platform
 		if !parent.horizontalSensor.is_colliding() and !parent.verticalSensorLeft.is_colliding() and !parent.verticalSensorRight.is_colliding():
 			climbPosition = parent.global_position.ceil()+Vector2(0,5)
-			parent.movement = Vector2.ZERO
+			parent.movement2d = Vector2.ZERO
 			parent.animator.play("climbUp")
 			climbUp = true
 	else:
@@ -83,7 +83,7 @@ func _physics_process(delta):
 func _process(_delta):
 	# jumping off
 	if (parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and !climbUp:
-		parent.movement = Vector2(-4*60*parent.direction,-4*60)
+		parent.movement2d = Vector2(-4*60*parent.direction,-4*60)
 		parent.direction *= -1
 		parent.animator.play("roll")
 		parent.animator.advance(0)

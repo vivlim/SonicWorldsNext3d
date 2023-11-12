@@ -19,7 +19,7 @@ var groundBuffer = 0
 func state_activated():
 	groundBuffer = 0
 	# if no movement on the x axis then go into a fall immediately
-	if parent.movement.x == 0:
+	if parent.movement2d.x == 0:
 		isFall = true
 		landed = false
 		sliding = false
@@ -27,11 +27,11 @@ func state_activated():
 		parent.animator.advance(1)
 		
 	else:
-		if parent.movement.x > 0:
+		if parent.movement2d.x > 0:
 			turnTimer = 0
 		else:
 			turnTimer = 180
-		speedPreservation = abs(parent.movement.x)
+		speedPreservation = abs(parent.movement2d.x)
 		parent.animator.play("glide")
 		# work around for animation (needed for attacking flag)
 		parent.lastActiveAnimation = "glide"
@@ -47,7 +47,7 @@ func state_exit():
 func _process(_delta):
 	# Jump and Spindash cancel
 	if (parent.inputs[parent.INPUTS.ACTION] == 1 or parent.inputs[parent.INPUTS.ACTION2] == 1 or parent.inputs[parent.INPUTS.ACTION3] == 1) and parent.ground and (sliding or isFall):
-		parent.movement.x = 0
+		parent.movement2d.x = 0
 		if (parent.inputs[parent.INPUTS.YINPUT] > 0):
 			parent.animator.play("spinDash")
 			parent.sfx[2].play()
@@ -65,7 +65,7 @@ func _process(_delta):
 	if !isFall and !sliding:
 		# Go into falling if action not held
 		if !parent.inputs[parent.INPUTS.ACTION] and !parent.inputs[parent.INPUTS.ACTION2] and !parent.inputs[parent.INPUTS.ACTION3]:
-			parent.movement.x *= 0.25
+			parent.movement2d.x *= 0.25
 			parent.animator.play("glideFall")
 			parent.sprite.flip_h = (parent.direction < 0)
 			# reset hitbox
@@ -87,17 +87,17 @@ func _physics_process(delta):
 		# left
 		if parent.direction > 0:
 			if turnTimer >= 180:
-				speedPreservation = abs(parent.movement.x)
+				speedPreservation = abs(parent.movement2d.x)
 			if turnTimer > 0:
 				turnTimer -= 2.8125*delta*60
-				parent.movement.x = speedPreservation*cos(deg_to_rad(turnTimer))
+				parent.movement2d.x = speedPreservation*cos(deg_to_rad(turnTimer))
 		# right
 		elif parent.direction < 0:
 			if turnTimer <= 0:
-				speedPreservation = abs(parent.movement.x)
+				speedPreservation = abs(parent.movement2d.x)
 			if turnTimer < 180:
 				turnTimer += 2.8125*delta*60
-				parent.movement.x = speedPreservation*cos(deg_to_rad(turnTimer))
+				parent.movement2d.x = speedPreservation*cos(deg_to_rad(turnTimer))
 		
 		turnTimer = clamp(turnTimer,0,180)
 		
@@ -113,19 +113,19 @@ func _physics_process(delta):
 		
 		# air movement
 		if parent.pushingWall == 0:
-			parent.movement.x = clamp(parent.movement.x+(glideAccel[int(parent.isSuper)]/GlobalFunctions.div_by_delta(delta)*parent.direction),-speedClamp,speedClamp)
+			parent.movement2d.x = clamp(parent.movement2d.x+(glideAccel[int(parent.isSuper)]/GlobalFunctions.div_by_delta(delta)*parent.direction),-speedClamp,speedClamp)
 		
 		# Limit vertical movement
-		if parent.movement.y < 0.5*60:
-			parent.movement.y += glideGrav/GlobalFunctions.div_by_delta(delta)
-		elif parent.movement.y > 0.5*60:
-			parent.movement.y -= glideGrav/GlobalFunctions.div_by_delta(delta)
+		if parent.movement2d.y < 0.5*60:
+			parent.movement2d.y += glideGrav/GlobalFunctions.div_by_delta(delta)
+		elif parent.movement2d.y > 0.5*60:
+			parent.movement2d.y -= glideGrav/GlobalFunctions.div_by_delta(delta)
 		
 		# Go into sliding if on ground
 		if parent.ground and !sliding and groundBuffer >= 1:
 			parent.animator.play("glideSlide")
-			if parent.movement.x != 0:
-				parent.direction = sign(parent.movement.x)
+			if parent.movement2d.x != 0:
+				parent.direction = sign(parent.movement2d.x)
 			parent.sprite.flip_h = (parent.direction < 0)
 			sliding = true
 			parent.reflective = false
@@ -142,32 +142,32 @@ func _physics_process(delta):
 		parent.horizontalSensor.force_raycast_update()
 		if parent.horizontalSensor.is_colliding() and !parent.ground:
 			# set direction
-			if parent.movement.x != 0:
-				parent.direction = sign(parent.movement.x)
+			if parent.movement2d.x != 0:
+				parent.direction = sign(parent.movement2d.x)
 			parent.sprite.flip_h = (parent.direction < 0)
 			
 			parent.set_state(parent.STATES.WALLCLIMB,parent.currentHitbox.GLIDE)
 			# play grab sound
 			parent.sfx[26].play()
 			parent.animator.play("climb")
-			parent.movement = Vector2.ZERO
+			parent.movement2d = Vector2.ZERO
 		
 		# prevent getting stuck on corners
 		parent.horizontalSensor.position.y = (parent.get_node("HitBox").shape.size.y/2)-1
 		parent.horizontalSensor.force_raycast_update()
 		if parent.horizontalSensor.is_colliding() and !parent.ground:
-			parent.movement.x = 0
+			parent.movement2d.x = 0
 	
 	# if sliding then do sliding routine
 	elif sliding:
 		
-		if parent.movement.x != 0:
-			parent.direction = sign(parent.movement.x)
-		parent.movement.x = move_toward(parent.movement.x,0,friction/GlobalFunctions.div_by_delta(delta))
+		if parent.movement2d.x != 0:
+			parent.direction = sign(parent.movement2d.x)
+		parent.movement2d.x = move_toward(parent.movement2d.x,0,friction/GlobalFunctions.div_by_delta(delta))
 		
 		# set direction
 		parent.sprite.flip_h = (parent.direction < 0)
-		if parent.movement.x == 0 and parent.lastActiveAnimation != "glideGetUp" and parent.ground:
+		if parent.movement2d.x == 0 and parent.lastActiveAnimation != "glideGetUp" and parent.ground:
 			parent.cameraDragLerp = 1
 			parent.set_hitbox(parent.currentHitbox.NORMAL)
 			parent.animator.play("glideGetUp")
@@ -178,7 +178,7 @@ func _physics_process(delta):
 		
 		# check if angle is default, if not then set movement to 0
 		if !is_equal_approx(parent.snap_angle(parent.gravityAngle),parent.snap_angle(parent.global_rotation)):
-			parent.movement.x = 0
+			parent.movement2d.x = 0
 		
 		# check for ground, if not on ground go into falling
 		if !parent.ground and groundBuffer >= 1:
@@ -191,18 +191,18 @@ func _physics_process(delta):
 		else:
 			# ground buffer's needed to prevent the player immediately disconecting
 			groundBuffer = 1
-			parent.movement.y = 0
+			parent.movement2d.y = 0
 	
 	# Do falling routine
 	else:
 		# regular movement
 		if !parent.ground:
 			# gravity
-			parent.movement.y += parent.grv/GlobalFunctions.div_by_delta(delta)
+			parent.movement2d.y += parent.grv/GlobalFunctions.div_by_delta(delta)
 			# movement (copied from air state)
-			if (parent.movement.x*parent.inputs[parent.INPUTS.XINPUT] < parent.top):
-				if (abs(parent.movement.x) < parent.top):
-					parent.movement.x = clamp(parent.movement.x+parent.air/GlobalFunctions.div_by_delta(delta)*parent.inputs[parent.INPUTS.XINPUT],-parent.top,parent.top)
+			if (parent.movement2d.x*parent.inputs[parent.INPUTS.XINPUT] < parent.top):
+				if (abs(parent.movement2d.x) < parent.top):
+					parent.movement2d.x = clamp(parent.movement2d.x+parent.air/GlobalFunctions.div_by_delta(delta)*parent.inputs[parent.INPUTS.XINPUT],-parent.top,parent.top)
 			# set direction
 			parent.sprite.flip_h = (parent.direction < 0)
 			
@@ -212,7 +212,7 @@ func _physics_process(delta):
 			# play land sound
 			parent.sfx[27].play()
 			# set movement to nothign
-			parent.movement = Vector2.ZERO
+			parent.movement2d = Vector2.ZERO
 			parent.animator.play("land")
 			# wait for landing animation to finish and check that the state is still the same
 			await parent.animator.animation_finished
@@ -223,7 +223,7 @@ func _physics_process(delta):
 # create skid dust
 func _on_SkidDustTimer_timeout():
 	if parent.currentState == parent.STATES.GLIDE:
-		if !sliding or (parent.movement.x == 0 and parent.ground):
+		if !sliding or (parent.movement2d.x == 0 and parent.ground):
 			$"../../SkidDustTimer".stop()
 		elif parent.ground:
 			var dust = parent.Particle.instantiate()

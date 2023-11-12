@@ -41,20 +41,20 @@ func _physics_process(delta):
 		# restore layer
 		parent.collision_layer = layerMemory
 		
-		parent.movement.y = 0
+		parent.movement2d.y = 0
 		# move to player y position
 		parent.global_position.y = move_toward(parent.global_position.y,targetPoint.y,delta*60)
 		
 		var distance = targetPoint.x-parent.global_position.x
 		# if far then fly by distance
 		if distance < 192:
-			#parent.movement.x += (distance/16)*delta*60
-			parent.movement.x = (distance/16)*60
+			#parent.movement2d.x += (distance/16)*delta*60
+			parent.movement2d.x = (distance/16)*60
 		else:
-			parent.movement.x += 12*60*delta*sign(distance)
+			parent.movement2d.x += 12*60*delta*sign(distance)
 		# distance clamp
-		if abs(distance)/16 > abs(parent.movement.x/60):
-			parent.movement.x = (distance/16)*60
+		if abs(distance)/16 > abs(parent.movement2d.x/60):
+			parent.movement2d.x = (distance/16)*60
 		
 		if distance != 0:
 			parent.direction = sign(distance)
@@ -71,7 +71,7 @@ func _physics_process(delta):
 				parent.collision_layer = parent.defaultLayer
 				parent.collision_mask = parent.defaultMask
 				parent.set_state(parent.STATES.AIR)
-				parent.movement = Vector2.ZERO
+				parent.movement2d = Vector2.ZERO
 				parent.collissionLayer = parent.partner.collissionLayer
 				# copy limits to avoid out of bounds errors
 				parent.limitLeft = parent.partner.limitLeft

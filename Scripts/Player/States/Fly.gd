@@ -45,7 +45,7 @@ func _process(_delta):
 			if carryBox.get_player_contacting_count() == 0:
 				parent.animator.play("fly")
 			else:
-				if parent.movement.y >= 0:
+				if parent.movement2d.y >= 0:
 					parent.animator.play("flyCarry")
 				else:
 					parent.animator.play("flyCarryUP")
@@ -77,7 +77,7 @@ func _physics_process(delta):
 	# Set carried player attributes when there *is* a carried player
 	if carriedPlayer != null:
 		if carriedPlayer.poleGrabID == carryBox:
-			carriedPlayer.movement = parent.movement
+			carriedPlayer.movement = parent.movement2d
 			carriedPlayer.stateList[parent.STATES.AIR].lockDir = true
 			# set carried player direction
 			carriedPlayer.direction = parent.direction
@@ -98,13 +98,13 @@ func _physics_process(delta):
 	# air movement
 	if (parent.get_x_input() != 0):
 		
-		if (parent.movement.x*parent.get_x_input() < parent.top):
-			if (abs(parent.movement.x) < parent.top):
-				parent.movement.x = clamp(parent.movement.x+parent.air/GlobalFunctions.div_by_delta(delta)*parent.get_x_input(),-parent.top,parent.top)
+		if (parent.movement2d.x*parent.get_x_input() < parent.top):
+			if (abs(parent.movement2d.x) < parent.top):
+				parent.movement2d.x = clamp(parent.movement2d.x+parent.air/GlobalFunctions.div_by_delta(delta)*parent.get_x_input(),-parent.top,parent.top)
 				
 	# Air drag
-	if (parent.movement.y < 0 and parent.movement.y > -parent.releaseJmp*60):
-		parent.movement.x -= ((parent.movement.x / 0.125) / 256)*60*delta
+	if (parent.movement2d.y < 0 and parent.movement2d.y > -parent.releaseJmp*60):
+		parent.movement2d.x -= ((parent.movement2d.x / 0.125) / 256)*60*delta
 	
 	# Change parent direction
 	if (parent.get_x_input() != 0):
@@ -116,11 +116,11 @@ func _physics_process(delta):
 	parent.sprite.flip_h = (parent.direction < 0)
 	
 	# Flight logic
-	parent.movement.y += flyGrav/GlobalFunctions.div_by_delta(delta)
+	parent.movement2d.y += flyGrav/GlobalFunctions.div_by_delta(delta)
 	
 	flightTime -= delta
 	# Button press
-	if parent.movement.y >= -1*60 and flightTime > 0 and !parent.roof and parent.position.y >= parent.limitTop+16:
+	if parent.movement2d.y >= -1*60 and flightTime > 0 and !parent.roof and parent.position.y >= parent.limitTop+16:
 		if parent.any_action_held_or_pressed() and (!actionPressed or parent.get_y_input() < 0) and (carryBox.get_player_contacting_count() == 0 or !parent.water):
 			flyGrav = -0.125
 	# return gravity to normal after velocity is less then -1
@@ -128,7 +128,7 @@ func _physics_process(delta):
 		flyGrav = 0.03125
 	
 	if parent.position.y < parent.limitTop+16:
-		parent.movement.y = max(0,parent.movement.y)
+		parent.movement2d.y = max(0,parent.movement2d.y)
 	
 	# set actionPressed to prevent input repeats
 	actionPressed = parent.any_action_held_or_pressed()

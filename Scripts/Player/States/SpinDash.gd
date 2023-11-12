@@ -29,7 +29,7 @@ func _process(delta):
 	
 	# release
 	if (parent.inputs[parent.INPUTS.YINPUT] <= 0):
-		parent.movement.x = (8+(floor(parent.spindashPower) / 2))*60*parent.direction
+		parent.movement2d.x = (8+(floor(parent.spindashPower) / 2))*60*parent.direction
 		parent.sfx[3].play()
 		parent.sfx[2].stop()
 		parent.sfx[2].pitch_scale = 1

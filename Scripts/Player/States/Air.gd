@@ -58,7 +58,7 @@ func _process(_delta):
 								parent.SHIELDS.ELEC:
 									parent.sfx[13].play()
 									# set movement upwards
-									parent.movement.y = -5.5*60.0
+									parent.movement2d.y = -5.5*60.0
 									# generate 4 electric particles and send them out diagonally (rotated for each iteration of i to 4)
 									for i in range(4):
 										var part = elecPart.instantiate()
@@ -71,7 +71,7 @@ func _process(_delta):
 									# partner check (so you don't flame boost when you're trying to fly with tails
 									if !(parent.inputs[parent.INPUTS.YINPUT] < 0 and parent.partner != null):
 										parent.sfx[14].play()
-										parent.movement = Vector2(8*60*parent.direction,0)
+										parent.movement2d = Vector2(8*60*parent.direction,0)
 										parent.shieldSprite.play("FireAction")
 										# set timer for animation related resets
 										var getTimer = parent.shieldSprite.get_node_or_null("ShieldTimer")
@@ -89,7 +89,7 @@ func _process(_delta):
 									if parent.shieldSprite.animation != "BubbleBounce":
 										parent.sfx[15].play()
 										# set movement and bounce reaction
-										parent.movement = Vector2(0,8*60)
+										parent.movement2d = Vector2(0,8*60)
 										parent.bounceReaction = 7.5
 										parent.shieldSprite.play("BubbleAction")
 										# set timer for animation related resets
@@ -107,7 +107,7 @@ func _process(_delta):
 					# Knuckles gliding
 					parent.CHARACTERS.KNUCKLES:
 						# set initial movement
-						parent.movement = Vector2(parent.direction*4*60,max(parent.movement.y,0))
+						parent.movement2d = Vector2(parent.direction*4*60,max(parent.movement2d.y,0))
 						parent.set_state(parent.STATES.GLIDE,parent.currentHitbox.GLIDE)
 					# Amy hammer drop dash
 					parent.CHARACTERS.AMY:
@@ -126,19 +126,19 @@ func _physics_process(delta):
 	# air movement
 	if (parent.inputs[parent.INPUTS.XINPUT] != 0 and parent.airControl):
 		
-		if (parent.movement.x*parent.inputs[parent.INPUTS.XINPUT] < parent.top):
-			if (abs(parent.movement.x) < parent.top):
-				parent.movement.x = clamp(parent.movement.x+parent.air/GlobalFunctions.div_by_delta(delta)*parent.inputs[parent.INPUTS.XINPUT],-parent.top,parent.top)
+		if (parent.movement2d.x*parent.inputs[parent.INPUTS.XINPUT] < parent.top):
+			if (abs(parent.movement2d.x) < parent.top):
+				parent.movement2d.x = clamp(parent.movement2d.x+parent.air/GlobalFunctions.div_by_delta(delta)*parent.inputs[parent.INPUTS.XINPUT],-parent.top,parent.top)
 				
 	# Air drag
-	if (parent.movement.y < 0 and parent.movement.y > -parent.releaseJmp*60):
-		parent.movement.x -= ((parent.movement.x / 0.125) / 256)*60*delta
+	if (parent.movement2d.y < 0 and parent.movement2d.y > -parent.releaseJmp*60):
+		parent.movement2d.x -= ((parent.movement2d.x / 0.125) / 256)*60*delta
 	
 	# Mechanics if jumping
 	if (isJump):
 		# Cut vertical movement if jump released
-		if !parent.any_action_held_or_pressed() and parent.movement.y < -4*60:
-			parent.movement.y = -4*60
+		if !parent.any_action_held_or_pressed() and parent.movement2d.y < -4*60:
+			parent.movement2d.y = -4*60
 		# Drop dash (for sonic / amy)
 		if parent.character == parent.CHARACTERS.SONIC or parent.character == parent.CHARACTERS.AMY:
 			
@@ -166,7 +166,7 @@ func _physics_process(delta):
 	parent.sprite.flip_h = (parent.direction < 0)
 	
 	# Gravity
-	parent.movement.y += parent.grv/GlobalFunctions.div_by_delta(delta)
+	parent.movement2d.y += parent.grv/GlobalFunctions.div_by_delta(delta)
 	
 	# Reset state if on ground
 	if (parent.ground):
@@ -181,21 +181,21 @@ func _physics_process(delta):
 			if dropTimer >= 1 and (parent.character == parent.CHARACTERS.SONIC or parent.character == parent.CHARACTERS.AMY):
 				# Check if moving forward or back
 				# Forward landing
-				if sign(parent.movement.x) == sign(parent.direction) or parent.movement.x == 0:
+				if sign(parent.movement2d.x) == sign(parent.direction) or parent.movement2d.x == 0:
 					# Calculate landing and limit to top speed
-					parent.movement.x = clamp((parent.movement.x/4) + (dropSpeed[int(parent.isSuper)]*60*parent.direction), -dropMax[int(parent.isSuper)]*60,dropMax[int(parent.isSuper)]*60)
+					parent.movement2d.x = clamp((parent.movement2d.x/4) + (dropSpeed[int(parent.isSuper)]*60*parent.direction), -dropMax[int(parent.isSuper)]*60,dropMax[int(parent.isSuper)]*60)
 				# Backwards landing
 				else:
 					# if floor angle is flat then just set to drop speed
 					if is_equal_approx(parent.angle,parent.gravityAngle):
-						parent.movement.x = dropSpeed[int(parent.isSuper)]*60*parent.direction
+						parent.movement2d.x = dropSpeed[int(parent.isSuper)]*60*parent.direction
 					# else calculate landing
 					else:
-						parent.movement.x = clamp((parent.movement.x/2) + (dropSpeed[int(parent.isSuper)]*60*parent.direction), -dropMax[int(parent.isSuper)]*60,dropMax[int(parent.isSuper)]*60)
+						parent.movement2d.x = clamp((parent.movement2d.x/2) + (dropSpeed[int(parent.isSuper)]*60*parent.direction), -dropMax[int(parent.isSuper)]*60,dropMax[int(parent.isSuper)]*60)
 				# Sonics drop dash handle
 				if parent.character == parent.CHARACTERS.SONIC:
 					# stop vertical movement downard
-					parent.movement.y = min(0,parent.movement.y)
+					parent.movement2d.y = min(0,parent.movement2d.y)
 					parent.set_state(parent.STATES.ROLL)
 					parent.animator.play("roll")
 					parent.sfx[20].stop()
@@ -212,13 +212,13 @@ func _physics_process(delta):
 				# Amys drop dash handle
 				elif parent.character == parent.CHARACTERS.AMY:
 					# stop vertical movement downard
-					parent.movement.y = min(0,parent.movement.y)
+					parent.movement2d.y = min(0,parent.movement2d.y)
 					parent.set_state(parent.STATES.AMYHAMMER)
 					parent.animator.play("hammerSwing")
 					parent.sfx[20].stop()
 					parent.sfx[3].play()
 	# if velocity going up reset bounce reaction
-	elif parent.movement.y < 0:
+	elif parent.movement2d.y < 0:
 		parent.bounceReaction = 0
 	
 	
@@ -255,7 +255,7 @@ func bounce():
 	# check if bounce reaction is set
 	if parent.bounceReaction != 0:
 		# set bounce movement
-		parent.movement.y = -parent.bounceReaction*60
+		parent.movement2d.y = -parent.bounceReaction*60
 		parent.bounceReaction = 0
 		# bubble shield actions
 		if parent.shieldSprite.animation == "BubbleAction" or parent.shieldSprite.animation == "Bubble":
