@@ -226,6 +226,7 @@ func update_sensors():
 func _physics_process(delta):
 	# apply the 2d movement vec to 3d.
 	movement = TranslateVec2(movement2d - lastMovement2d) + movement
+	lastMovement2d = movement2d
 	#movement += Vector2(-int(Input.is_action_pressed("gm_left"))+int(Input.is_action_pressed("gm_right")),-int(Input.is_action_pressed("gm_up"))+int(Input.is_action_pressed("gm_down")))*_delta*100
 	var moveRemaining = movement # copy of the movement variable to cut down on until it hits 0
 	var checkOverride = true
@@ -277,25 +278,29 @@ func _physics_process(delta):
 				# Set ground to true but only if movement.y is 0 or less
 				ground = true
 				# get ground angle
-				angle = deg_to_rad(snapped(rad_to_deg(getVert.get_collision_normal().rotated(deg_to_rad(90)).angle()),0.001))
+				var collision_normal2d = Translate3DTo2D(getVert.get_collision_normal())
+				angle = deg_to_rad(snapped(collision_normal2d.rotated(deg_to_rad(90)).angle(),0.001))
 			else:
 				# ceiling routine
 				roof = true
 			
 			#  Calculate the move distance vectorm, then move
-			var rayHitVec = (getVert.get_collision_point()-getVert.global_position)
+			var rayHitVec = getVert.get_collision_point()-getVert.global_position
+			var rayHitVec2d = Translate3DTo2D(rayHitVec)
 			# Snap the Vector and normalize it
-			var normHitVec = TranslateVec2(-Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle())))
-			if move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector3(0,yGroundDiff,0) * Quaternion(slopeRotAxis, rotation2d),true,true,true).normalized():
-				var _col = move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector3(0,yGroundDiff,0) * Quaternion(slopeRotAxis, rotation2d)).normalized()
+			var normHitVec = TranslateVec2(-Vector2.LEFT.rotated(snap_angle(rayHitVec2d.normalized().angle())))
+			if move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector3(0,yGroundDiff,0) * Quaternion(slopeRotAxis, rotation2d).normalized(),true,true,true):
+				var _col = move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector3(0,yGroundDiff,0) * Quaternion(slopeRotAxis, rotation2d).normalized())
 			else:
 				# Do a check that we're not in the middle of a rotation, otherwise the player can get caught on outter curves (more noticable on higher physics frame rates)
 				if snap_angle(angle) == snap_angle(rotation2d):
-					position += (rayHitVec-(normHitVec*(($HitBox.shape.size.y/2)+0.25))-Vector2(0,yGroundDiff).rotated(rotation2d))
+					var idk = TranslateVec2(Vector2(0,yGroundDiff).rotated(rotation2d))
+					position += (rayHitVec-(normHitVec*(($HitBox.shape.size.y/2)+0.25))-idk)
 				else:
 					# if the angle doesn't match the current rotation, move toward the slope angle unsnapped instead of following the raycast
-					normHitVec = -Vector2.LEFT.rotated(rayHitVec.normalized().angle())
-					position += (normHitVec-Vector2(0,yGroundDiff).rotated(rotation2d))
+					normHitVec = -Vector2.LEFT.rotated(rayHitVec2d.normalized().angle())
+					var idk = TranslateVec2(Vector2(0,yGroundDiff).rotated(rotation2d))
+					position += (normHitVec-idk)
 		
 		# set rotation
 		

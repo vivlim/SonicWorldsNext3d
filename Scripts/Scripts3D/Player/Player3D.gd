@@ -1159,10 +1159,11 @@ func respawn():
 
 func touch_ceiling():
 	if getVert != null:
-		var getAngle = wrapf(-rad_to_deg(getVert.get_collision_normal().angle())-90,0,360)
+		var collisionNormal2d = Translate3DTo2D(getVert.get_collision_normal())
+		var getAngle = wrapf(-rad_to_deg(collisionNormal2d.angle())-90,0,360)
 		if (getAngle > 225 or getAngle < 135):
 			angle = getAngle
-			rotation = snap_angle(-deg_to_rad(getAngle))
+			rotation2d = snap_angle(-deg_to_rad(getAngle))
 			update_sensors()
 			movement2d = -Vector2(movement2d.y*sign(sin(deg_to_rad(getAngle))),0)
 			ground = true
