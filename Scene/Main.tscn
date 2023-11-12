@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://byje3iiukvt4p"]
+[gd_scene load_steps=19 format=3 uid="uid://byje3iiukvt4p"]
 
 [ext_resource type="AudioStream" uid="uid://dec4ik84l88go" path="res://Audio/Soundtrack/2. SWD_SpeedUp.ogg" id="1"]
 [ext_resource type="Script" path="res://Scripts/Global/Main.gd" id="2"]
@@ -133,13 +133,27 @@ _data = {
 "WhiteOut": SubResource("Animation_rqlip")
 }
 
-[node name="Main" type="Node2D"]
+[sub_resource type="QuadMesh" id="QuadMesh_r7ev2"]
+size = Vector2(3.2, 2.24)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_7qukk"]
+viewport_path = NodePath("SonicWorldsNextViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fqits"]
+resource_local_to_scene = true
+specular_mode = 2
+disable_ambient_light = true
+albedo_texture = SubResource("ViewportTexture_7qukk")
+
+[node name="Main" type="Node3D"]
 script = ExtResource("2")
 
-[node name="SceneLoader" type="Node" parent="."]
+[node name="SonicWorldsNextViewport" type="SubViewport" parent="."]
+
+[node name="SceneLoader" type="Node" parent="SonicWorldsNextViewport"]
 process_mode = 1
 
-[node name="PoweredByWorlds" parent="SceneLoader" instance=ExtResource("4")]
+[node name="PoweredByWorlds" parent="SonicWorldsNextViewport/SceneLoader" instance=ExtResource("4")]
 
 [node name="Music" type="Node" parent="."]
 process_mode = 1
@@ -186,5 +200,15 @@ libraries = {
 [node name="ControllerMenu" parent="GUI" instance=ExtResource("6")]
 
 [node name="Pause" parent="GUI" instance=ExtResource("7")]
+
+[node name="ViewportPlane" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_r7ev2")
+surface_material_override/0 = SubResource("StandardMaterial3D_fqits")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.46497)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775775, 0)
 
 [connection signal="finished" from="Music/Life" to="." method="_on_Life_finished"]

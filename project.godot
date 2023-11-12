@@ -28,8 +28,8 @@ shapes/collision/shape_color=Color(1, 1, 1, 0.501961)
 
 [display]
 
-window/size/viewport_width=320
-window/size/viewport_height=224
+window/size/viewport_width=1280
+window/size/viewport_height=896
 window/stretch/mode="viewport"
 
 [dotnet]

@@ -1,5 +1,7 @@
 class_name MainGameScene
-extends Node2D
+extends Node3D
+
+var rotCurrent = Quaternion(0, 0, 0, 0)
 
 # last scene is used for referencing the current scene (this is used for stage restarting)
 var lastScene = null
@@ -76,6 +78,7 @@ func _input(event):
 	# reset game if F2 is pressed (this button can be changed in project settings)
 	if event.is_action_pressed("ui_reset"):
 		reset_game()
+	$SonicWorldsNextViewport.push_input(event)
 
 # reset game function
 func reset_game():
@@ -121,11 +124,11 @@ func change_scene_to_file(scene = null, fadeOut = "", fadeIn = "", length = 1, s
 			restoreScene = true
 		# if stage memory is empty, add current scene
 		else:
-			Global.stageInstanceMemory = $SceneLoader.get_child(0)
-			$SceneLoader.remove_child(Global.stageInstanceMemory)
+			Global.stageInstanceMemory = $SonicWorldsNextViewport/SceneLoader.get_child(0)
+			$SonicWorldsNextViewport/SceneLoader.remove_child(Global.stageInstanceMemory)
 	
 	# clear scene
-	for i in $SceneLoader.get_children():
+	for i in $SonicWorldsNextViewport/SceneLoader.get_children():
 		i.queue_free()
 	
 	await get_tree().process_frame
@@ -145,7 +148,7 @@ func change_scene_to_file(scene = null, fadeOut = "", fadeIn = "", length = 1, s
 	# check if to restore scene
 	if restoreScene:
 		# add stored scene to scene loader
-		$SceneLoader.add_child(Global.stageInstanceMemory)
+		$SonicWorldsNextViewport/SceneLoader.add_child(Global.stageInstanceMemory)
 		# check if the scene has a function called "level_reset_data"
 		# if it does then execute it so the level can run any scripts it needs to for a level start
 		# this is mostly used in the level manager to play the title card again
@@ -159,9 +162,9 @@ func change_scene_to_file(scene = null, fadeOut = "", fadeIn = "", length = 1, s
 	# create new scene
 		if scene == null:
 			if lastScene != null:
-				$SceneLoader.add_child(lastScene.instantiate())
+				$SonicWorldsNextViewport/SceneLoader.add_child(lastScene.instantiate())
 		else:
-			$SceneLoader.add_child(scene.instantiate())
+			$SonicWorldsNextViewport/SceneLoader.add_child(scene.instantiate())
 			lastScene = scene
 			# don't know if the current scene is gonna be stored in memory so store last scene to global state load memory
 			# check there's not a stored scene first
@@ -201,3 +204,18 @@ func set_volume(volume = 0, fadeSpeed = 1):
 	# set the speed for the transition
 	volumeFadeSpeed = fadeSpeed
 	# this is continued in _process() as it needs to run during gameplay
+
+
+func _physics_process(delta):
+	var current = Quaternion($ViewportPlane.transform.basis)
+	var analogStickVec = Vector3(Input.get_joy_axis(0, JOY_AXIS_RIGHT_X) * 10, Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y) * 10, 0)
+	print(analogStickVec)
+	var xRot = Quaternion(Vector3(0, 1, 0), Input.get_joy_axis(0, JOY_AXIS_RIGHT_X))
+	var yRot = Quaternion(Vector3(1, 0, 0), Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y))
+	var target = Quaternion(Vector3(0, 0, 0), analogStickVec)
+	var newRot = current.slerp(xRot.normalized(), 0.5)
+	newRot = newRot.slerp(yRot.normalized(), 0.5)
+	#rotCurrent = rotCurrent.slerp(rotTarget, 0.1)
+	$ViewportPlane.transform.basis = Basis(newRot)
+	
+	#$ViewportPlane.transform.basis = Basis(rotCurrent)
