@@ -181,7 +181,7 @@ enum INPUTS {XINPUT, YINPUT, ACTION, ACTION2, ACTION3, SUPER, PAUSE}
 # Input control, 0 = 0ff, 1 = pressed, 2 = held
 # (for held it's best to use inputs[INPUTS.ACTION] > 0)
 # XInput and YInput are directions and are either -1, 0 or 1.
-var inputs = [0,0,0,0,0,0,0,0]
+@export var inputs = [0,0,0,0,0,0,0,0]
 const INPUTACTIONS_P1 = [["gm_left","gm_right"],["gm_up","gm_down"],"gm_action","gm_action2","gm_action3","gm_super","gm_pause"]
 const INPUTACTIONS_P2 = [["gm_left_P2","gm_right_P2"],["gm_up_P2","gm_down_P2"],"gm_action_P2","gm_action2_P2","gm_action3_P2","gm_super_P2","gm_pause_P2"]
 var inputActions = INPUTACTIONS_P1
@@ -442,12 +442,12 @@ func _process(delta):
 				
 				# x distance difference check, try to go to the partner
 				if (partner.inputs[INPUTS.XINPUT] == 0 and partner.inputs[INPUTS.YINPUT] == 0
-					or global_position.distance_to(partner.global_position) > 48 and round(movement.x/300) == 0
+					or global_position.distance_to(partner.global_position) > 48 and round(movement2d.x/300) == 0
 					) and abs(global_position.x-partner.global_position.x) >= 32:
 					partner.inputs[INPUTS.XINPUT] = sign(global_position.x - partner.global_position.x)
 				
 				# Jump if pushing a wall, slower then half speed, on a flat surface and is either normal or jumping
-				if (partner.currentState == STATES.NORMAL or partner.currentState == STATES.JUMP) and abs(partner.movement.x) < top/2.0 and snap_angle(partner.angle) == 0 or (partner.pushingWall != 0 and pushingWall == 0):
+				if (partner.currentState == STATES.NORMAL or partner.currentState == STATES.JUMP) and abs(partner.movement2d.x) < top/2.0 and snap_angle(partner.angle) == 0 or (partner.pushingWall != 0 and pushingWall == 0):
 					# check partners position, only jump ever 0.25 seconds (prevent jump spam)
 					if global_position.y+32 < partner.global_position.y and partner.inputs[INPUTS.ACTION] == 0 and partner.ground and ground and (fmod(Global.globalTimer+delta,0.25) < fmod(Global.globalTimer,0.25)):
 						partner.inputs[INPUTS.ACTION] = 1
@@ -458,7 +458,7 @@ func _process(delta):
 				if global_position.distance_to(partner.global_position) <= 48 or partner.direction != sign(global_position.x - partner.global_position.x):
 					partnerPanic = 0
 				partner.inputs[INPUTS.XINPUT] = 0
-				if round(partner.movement.x) == 0:
+				if round(partner.movement2d.x) == 0:
 					partnerPanic -= delta
 					partner.inputs[INPUTS.YINPUT] = 1
 					# press action every 0.3 ticks
@@ -697,8 +697,8 @@ func _physics_process(delta):
 		
 		# give pushingWall a buffer otherwise this just switches on and off
 		pushingWall = getDir*2
-		if sign(movement.x) == sign(horizontalSensor.target_position.x):
-			movement.x = 0
+		if sign(movement2d.x) == sign(horizontalSensor.target_position.x):
+			movement2d.x = 0
 		# disable pushing wall
 		if inputs[INPUTS.XINPUT] != sign(pushingWall):
 			pushingWall == 0
@@ -795,9 +795,9 @@ func _physics_process(delta):
 	
 	
 	
-	# Stop movement at borders
+	# Stop at borders
 	if (global_position.x < limitLeft+cameraMargin or global_position.x > limitRight-cameraMargin):
-		movement.x = 0
+		movement2d.x = 0
 	# Clamp position
 	global_position.x = clamp(global_position.x,limitLeft+cameraMargin,limitRight-cameraMargin)
 	
@@ -814,8 +814,8 @@ func _physics_process(delta):
 		if global_position.y > Global.waterLevel and !water:
 			water = true
 			switch_physics(true)
-			movement.x *= 0.5
-			movement.y *= 0.25
+			movement2d.x *= 0.5
+			movement2d.y *= 0.25
 			if currentState != STATES.RESPAWN:
 				sfx[17].play()
 				var splash = Particle.instantiate()
@@ -830,7 +830,7 @@ func _physics_process(delta):
 		if global_position.y < Global.waterLevel and water:
 			water = false
 			switch_physics(false)
-			movement.y *= 2
+			movement2d.y *= 2
 			sfx[17].play()
 			var splash = Particle.instantiate()
 			splash.behaviour = splash.TYPE.FOLLOW_WATER_SURFACE
@@ -1118,14 +1118,14 @@ func kill():
 		if airTimer > 0:
 			water = false
 			switch_physics(false)
-			movement = Vector2(0,-7*60)
+			movement2d = Vector2(0,-7*60)
 			animator.play("die")
 			sfx[6].play()
 		else:
 			if playerControl == 1:
 				Global.music.stop()
 				Global.effectTheme.stop()
-			movement = Vector2(0,0)
+			movement2d = Vector2(0,0)
 			animator.play("drown")
 			sfx[25].play()
 		set_state(STATES.DIE,currentHitbox.NORMAL)
@@ -1144,7 +1144,7 @@ func respawn():
 		collision_mask = 0
 		#z_index = defaultZIndex
 		respawnTime = RESPAWN_DEFAULT_TIME
-		movement = Vector2.ZERO
+		movement2d = Vector2.ZERO
 		water = false
 		# update physics (prevents player having water physics on respawn)
 		switch_physics()
@@ -1164,27 +1164,27 @@ func touch_ceiling():
 			angle = getAngle
 			rotation = snap_angle(-deg_to_rad(getAngle))
 			update_sensors()
-			movement = -Vector2(movement.y*sign(sin(deg_to_rad(getAngle))),0)
+			movement2d = -Vector2(movement2d.y*sign(sin(deg_to_rad(getAngle))),0)
 			ground = true
 			return true
-	movement.y = 0
+	movement2d.y = 0
 
 func land_floor():
 	
 	abilityUsed = false
-	# landing movement calculation
+	# landing calculation
 	
 	# recalculate ground angle
 	var calcAngle = wrapf(rad_to_deg(angle)-rad_to_deg(gravityAngle),0,360)
 	
 	# check not shallow
-	if (calcAngle >= 22.5 and calcAngle <= 337.5 and abs(movement.x) < movement.y):
+	if (calcAngle >= 22.5 and calcAngle <= 337.5 and abs(movement2d.x) < movement2d.y):
 		# check half steep
 		if (calcAngle < 45 or calcAngle > 315):
-			movement.x = movement.y*0.5*sign(sin(angle-gravityAngle))
+			movement2d.x = movement2d.y*0.5*sign(sin(angle-gravityAngle))
 		# else do full steep
 		else:
-			movement.x = movement.y*sign(sin(angle-gravityAngle))
+			movement2d.x = movement2d.y*sign(sin(angle-gravityAngle))
 
 
 # clean animation
@@ -1334,7 +1334,7 @@ func _on_BubbleTimer_timeout():
 #		if airTimer > 0:
 #			bub.global_position = global_position+Vector2(8*direction,0)
 #			$BubbleTimer.start(max(randf()*3,0.5))
-#		elif movement.y < 250:
+#		elif movement2d.y < 250:
 #			bub.global_position = global_position+Vector2(0,-8)
 #			# pick either 0 or 1 for the bubble type (cosmetic)
 #			bub.bubbleType = int(round(randf()))
@@ -1350,7 +1350,7 @@ func _on_BubbleTimer_timeout():
 func action_move(delta):
 	# moving left and right, check if left or right is being pressed
 	if inputs[INPUTS.XINPUT] != 0:
-		# check if movement is less then the top speed
+		# check if is less then the top speed
 		if movement2d.x*inputs[INPUTS.XINPUT] < top:
 			# check if the player is pressing the direction they're moving
 			if sign(movement2d.x) == inputs[INPUTS.XINPUT] or sign(movement2d.x) == 0:

@@ -146,7 +146,7 @@ func physics_process_connected(_delta, player, index):
 	# verify position change won't clip into objects
 	if !player.test_move(player.global_transform,getPose-player.global_position):
 		player.global_position = getPose
-		player.movement = Vector2.ZERO
+		player.movement2d = Vector2.ZERO
 				
 	player.cam_update()
 	
@@ -160,7 +160,7 @@ func physics_process_disconnected(_delta, player, index):
 		return
 
 	# If it's going to pick a player up off the ground, it has to be moving upwards.
-	if player.ground and parent.movement.y > 0:
+	if player.ground and parent.movement2d.y > 0:
 		return
 	
 	# XXX This a Tails centric hack right now. I don't like it. It makes Tails
@@ -216,7 +216,7 @@ func connect_grab(player, index):
 	# verify position change won't clip into objects
 	#if !player.test_move(player.global_transform,getPose-player.global_position):
 	player.global_position = getPose
-	player.movement = Vector2.ZERO
+	player.movement2d = Vector2.ZERO
 				
 	player.cam_update()
 
@@ -237,9 +237,9 @@ func disconnect_grab(player, index, deliberate, jumpUpwards=false):
 	
 	if deliberate:
 		if (jumpUpwards):
-			player.movement.y = -player.jmp/2
+			player.movement2d.y = -player.jmp/2
 		else:
-			player.movement.y = player.jmp/16
+			player.movement2d.y = player.jmp/16
 		# set ground speed to 0 to stop rolling going nuts
 		player.groundSpeed = 0
 
@@ -301,7 +301,7 @@ func check_grab(player, index):
 		return false
 
 	# We don't grab if the player is moving upwards and the pole is set not to grab upward moving players.
-	if player.movement.y < 0 and onlyActiveMovingDown:
+	if player.movement2d.y < 0 and onlyActiveMovingDown:
 		return false
 		
 	# We don't grab when the player is outside of the allowed contact distance

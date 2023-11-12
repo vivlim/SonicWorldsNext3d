@@ -1,21 +1,23 @@
 class_name PhysicsObject3D extends CharacterBody3D
 
 func TranslateVec2(input):
-	var input3d = Vector3(input.x, input.y, 0)
+	# invert Y because negative Y goes up in 2d
+	var input3d = Vector3(input.x, input.y * -1, 0)
 	var planeRot = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot).normalized()
 	return planeRot * input3d
 
 func Translate3DTo2D(inputVec3):
 	var planeRotReverse = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot * -1).normalized()
 	var unrotated = planeRotReverse * inputVec3
-	return Vector2(unrotated.x, unrotated.y)
+	return Vector2(unrotated.x, unrotated.y * -1)
 
 @export var position2d = Vector2(0, 0)
 @export var movement2d = Vector2(0, 0)
+var lastMovement2d = Vector2(0, 0)
 @export var rotation2d = 0.0
 @export var gameplayPlaneRot = 0.0
 @export var slopeRotAxis = Vector3(0, 0, 1)
-@export var pixelSize = 0.001 # wild guess.
+@export var pixelSize = 0.01 # wild guess.
 
 func Update3DRotation():
 #	var current = Quaternion($ViewportPlane.transform.basis).normalized()
@@ -117,7 +119,7 @@ func update_sensors():
 	var verticalSensorLeftPosition2d = Vector2(-(shape.x-0.01),-yGroundDiff)
 	verticalSensorLeft.position = TranslateVec2(verticalSensorLeftPosition2d)
 	
-	var movement2d = Translate3DTo2D(movement)
+	#var movement2d = Translate3DTo2D(movement)
 	# calculate how far down to look if on the floor, the sensor extends more if the objects is moving, if the objects moving up then it's ignored,
 	# if you want behaviour similar to sonic 1, replace "min(abs(movement.x/60)+4,groundLookDistance)" with "groundLookDistance"
 	var extendFloorLook = min(abs(movement2d.x/60)+4,groundLookDistance)*(int(movement2d.y >= 0)*int(ground))
@@ -223,7 +225,7 @@ func update_sensors():
 
 func _physics_process(delta):
 	# apply the 2d movement vec to 3d.
-	movement = TranslateVec2(movement2d)
+	movement = TranslateVec2(movement2d - lastMovement2d) + movement
 	#movement += Vector2(-int(Input.is_action_pressed("gm_left"))+int(Input.is_action_pressed("gm_right")),-int(Input.is_action_pressed("gm_up"))+int(Input.is_action_pressed("gm_down")))*_delta*100
 	var moveRemaining = movement # copy of the movement variable to cut down on until it hits 0
 	var checkOverride = true
@@ -270,9 +272,9 @@ func _physics_process(delta):
 		# check if colliding (get_nearest_vertical_sensor returns false if no floor was detected)
 		if getVert:
 			# check if movement is going downward, if it is then run some ground routines
-			if (movement.y >= 0):
+			if (movement.y <= 0): # had to flip this for 3d
 				# ground routine
-				# Set ground to true but only if movement.y is 0 or more
+				# Set ground to true but only if movement.y is 0 or less
 				ground = true
 				# get ground angle
 				angle = deg_to_rad(snapped(rad_to_deg(getVert.get_collision_normal().rotated(deg_to_rad(90)).angle()),0.001))
