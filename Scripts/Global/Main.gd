@@ -179,8 +179,10 @@ func change_scene_to_file(scene = null, fadeOut = "", fadeIn = "", length = 1, s
 				
 	for i in $SceneLoader.get_children():
 		if i is Node2D:
+			print("2d scene")
 			i.reparent($Scene2D)
 		elif i is Node3D:
+			print("3d scene")
 			i.reparent($Scene3D)
 	
 	# play fade in animation if it's not blank
