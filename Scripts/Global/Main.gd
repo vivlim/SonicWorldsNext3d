@@ -1,7 +1,7 @@
 class_name MainGameScene
 extends Node3D
 
-var rotCurrent = Quaternion(0, 0, 0, 0)
+var rotCurrent = Quaternion(0, 0, 0, 0).normalized()
 var cStickScaleFactor = 0.5
 var cStickDeadZone = 0.1
 
@@ -221,7 +221,7 @@ func set_volume(volume = 0, fadeSpeed = 1):
 
 
 func _physics_process(delta):
-	var current = Quaternion($ViewportPlane.transform.basis)
+	var current = Quaternion($ViewportPlane.transform.basis).normalized()
 	var analogStickVec = Vector3(Input.get_joy_axis(0, JOY_AXIS_RIGHT_X) * 10, Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y) * 10, 0)
 	var targetXRot = Input.get_joy_axis(0, JOY_AXIS_RIGHT_X)
 	var targetYRot = Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y)
@@ -235,9 +235,9 @@ func _physics_process(delta):
 	else:
 		targetYRot = targetYRot * cStickScaleFactor
 	
-	var xRot = Quaternion(Vector3(0, 1, 0), targetXRot)
-	var yRot = Quaternion(Vector3(1, 0, 0), targetYRot)
-	var target = Quaternion(Vector3(0, 0, 0), analogStickVec)
+	var xRot = Quaternion(Vector3(0, 1, 0), targetXRot).normalized()
+	var yRot = Quaternion(Vector3(1, 0, 0), targetYRot).normalized()
+	var target = Quaternion(Vector3(0, 0, 0), analogStickVec).normalized()
 	var newRot = current.slerp(xRot.normalized(), 0.5)
 	newRot = newRot.slerp(yRot.normalized(), 0.5)
 	#rotCurrent = rotCurrent.slerp(rotTarget, 0.1)

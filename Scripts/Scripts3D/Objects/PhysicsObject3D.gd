@@ -2,11 +2,11 @@ class_name PhysicsObject3D extends CharacterBody3D
 
 func TranslateVec2(input):
 	var input3d = Vector3(input.x, input.y, 0)
-	var planeRot = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot)
+	var planeRot = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot).normalized()
 	return planeRot * input3d
 
 func Translate3DTo2D(inputVec3):
-	var planeRotReverse = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot * -1)
+	var planeRotReverse = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot * -1).normalized()
 	var unrotated = planeRotReverse * inputVec3
 	return Vector2(unrotated.x, unrotated.y)
 
@@ -18,9 +18,9 @@ func Translate3DTo2D(inputVec3):
 @export var pixelSize = 0.001 # wild guess.
 
 func Update3DRotation():
-#	var current = Quaternion($ViewportPlane.transform.basis)
-	var planeRot = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot)
-	var slopeRot = Quaternion(Vector3(0, 0, 1), rotation2d)
+#	var current = Quaternion($ViewportPlane.transform.basis).normalized()
+	var planeRot = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot).normalized()
+	var slopeRot = Quaternion(Vector3(0, 0, 1), rotation2d).normalized()
 #	var newRot = current.slerp(planeRot.normalized(), 0.5)
 #	newRot = newRot.slerp(slopeRot.normalized(), 0.5)
 	transform.basis = Basis(planeRot * slopeRot)
@@ -184,7 +184,7 @@ func update_sensors():
 	slopeCheck.target_position = TranslateVec2(Vector2((shape.y+extendFloorLook)*sign(rotation2d-angle),0))
 	
 	# viv todo: i thiiiink the rotation of these sensors is used to make them all align but their y value is pointed in the direction that matters
-	var rotationSnap3d = Quaternion(slopeRotAxis, rotationSnap) * Vector3(0, 1, 0) # gonna go with an upwards facing vector
+	var rotationSnap3d = Quaternion(slopeRotAxis, rotationSnap) * Vector3(0, 1, 0).normalized() # gonna go with an upwards facing vector
 	verticalSensorLeft.global_rotation = rotationSnap3d
 	verticalSensorRight.global_rotation = rotationSnap3d
 	horizontalSensor.global_rotation = rotationSnap3d
@@ -231,7 +231,7 @@ func _physics_process(delta):
 		checkOverride = false
 		var moveCalc = moveRemaining.normalized()*min(moveStepLength,moveRemaining.length())
 		
-		velocity = Quaternion(Vector3(0, 1, 0), angle) * moveCalc
+		velocity = Quaternion(Vector3(0, 1, 0), angle).normalized() * moveCalc
 		set_up_direction(TranslateVec2(Vector2.UP.rotated(gravityAngle)))
 		# wasMovedUp is set to true if an object collision occurs
 		var wasMovedUp = false
@@ -284,8 +284,8 @@ func _physics_process(delta):
 			var rayHitVec = (getVert.get_collision_point()-getVert.global_position)
 			# Snap the Vector and normalize it
 			var normHitVec = TranslateVec2(-Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle())))
-			if move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector3(0,yGroundDiff,0) * Quaternion(slopeRotAxis, rotation2d),true,true,true):
-				var _col = move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector3(0,yGroundDiff,0) * Quaternion(slopeRotAxis, rotation2d))
+			if move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector3(0,yGroundDiff,0) * Quaternion(slopeRotAxis, rotation2d),true,true,true).normalized():
+				var _col = move_and_collide(rayHitVec-(normHitVec*($HitBox.shape.size.y/2))-Vector3(0,yGroundDiff,0) * Quaternion(slopeRotAxis, rotation2d)).normalized()
 			else:
 				# Do a check that we're not in the middle of a rotation, otherwise the player can get caught on outter curves (more noticable on higher physics frame rates)
 				if snap_angle(angle) == snap_angle(rotation2d):
@@ -301,7 +301,7 @@ func _physics_process(delta):
 		slopeCheck.force_raycast_update()
 		
 		if slopeCheck.is_colliding():
-			var getSlope = snap_angle(slopeCheck.get_collision_normal() * Quaternion(slopeRotAxis, deg_to_rad(90))) # todo: confirm radians is right for 3d, and that this is ok
+			var getSlope = snap_angle(slopeCheck.get_collision_normal() * Quaternion(slopeRotAxis, deg_to_rad(90))).normalized() # todo: confirm radians is right for 3d, and that this is ok
 			# compare slope to current angle, check that it's not going to result in our current angle if we rotated
 			var getSlope2d = Translate3DTo2D(getSlope)
 			if getSlope2d != rotation2d:
@@ -436,7 +436,7 @@ func get_nearest_vertical_sensor():
 func disconect_from_floor(force = false):
 	if ground or force:
 		# convert velocity
-		movement = movement * Quaternion(slopeRotAxis, angle-gravityAngle)
+		movement = movement * Quaternion(slopeRotAxis, angle-gravityAngle).normalized()
 		movement2d = Translate3DTo2D(movement)
 		angle = gravityAngle
 		ground = false

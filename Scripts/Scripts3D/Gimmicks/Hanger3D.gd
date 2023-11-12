@@ -305,7 +305,7 @@ func check_grab(player, index):
 		return false
 		
 	# We don't grab when the player is outside of the allowed contact distance
-	if (player.global_position.y - global_position.y) < Vector3(0, _CONTACT_DISTANCE, 0) * Quaternion(player.slopeRotAxis, rotation).y:
+	if (player.global_position.y - global_position.y) < Vector3(0, _CONTACT_DISTANCE, 0) * Quaternion(player.slopeRotAxis, rotation).normalized().y:
 		return false
 		
 	# We don't grab when holdDownToDrop is active and down is held

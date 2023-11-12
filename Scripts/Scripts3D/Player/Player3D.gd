@@ -507,8 +507,8 @@ func _process(delta):
 	else:
 		spriteRotationToSet2d = -rotation2d+gravityAngle
 	
-	var spriteRotation2dQ = Quaternion(Vector3(0, 0, 1), spriteRotationToSet2d)
-	var gamePlaneRotationQ = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot)
+	var spriteRotation2dQ = Quaternion(Vector3(0, 0, 1), spriteRotationToSet2d).normalized()
+	var gamePlaneRotationQ = Quaternion(Vector3(0, 1, 0), gameplayPlaneRot).normalized()
 	sprite.transform.basis = Basis(spriteRotation2dQ * gamePlaneRotationQ)
 
 	spriteControler.global_position = global_position.round()
@@ -968,7 +968,7 @@ func set_state(newState, forceMask = Vector3.ZERO):
 		match(newState):
 			STATES.JUMP, STATES.ROLL:
 				# adjust y position
-				forcePoseChange = ((hitbox_to_3d(currentHitbox.ROLL)-$HitBox.shape.size)*Vector3.UP) * Quaternion(slopeRotAxis, rotation)*0.5
+				forcePoseChange = ((hitbox_to_3d(currentHitbox.ROLL)-$HitBox.shape.size)*Vector3.UP) * Quaternion(slopeRotAxis, rotation).normalized()*0.5
 				
 				# change hitbox size
 				$HitBox.shape.size = hitbox_to_3d(currentHitbox.ROLL)
@@ -980,13 +980,13 @@ func set_state(newState, forceMask = Vector3.ZERO):
 				var currentHitboxSize = $HitBox.shape.size
 				var normalHitboxSize = hitbox_to_3d(currentHitbox.NORMAL)
 				# adjust y position
-				forcePoseChange = ((normalHitboxSize-currentHitboxSize)*Vector3.UP) * Quaternion(slopeRotAxis, rotation)*0.5
+				forcePoseChange = ((normalHitboxSize-currentHitboxSize)*Vector3.UP) * Quaternion(slopeRotAxis, rotation).normalized()*0.5
 				
 				# change hitbox size
 				$HitBox.shape.size = hitbox_to_3d(currentHitbox.NORMAL)
 	else:
 		# adjust y position
-		forcePoseChange = ((forceMask-$HitBox.shape.size)*Vector3.UP) * Quaternion(slopeRotAxis, rotation)*0.5
+		forcePoseChange = ((forceMask-$HitBox.shape.size)*Vector3.UP) * Quaternion(slopeRotAxis, rotation).normalized()*0.5
 		# change hitbox size
 		$HitBox.shape.size = forceMask
 	
@@ -1001,7 +1001,7 @@ func hitbox_to_3d(hitbox2d):
 func set_hitbox(mask = Vector3.ZERO, forcePoseChange = false):
 	# adjust position if on floor or force pose change
 	if ground or forcePoseChange:
-		position += ((mask-$HitBox.shape.size)*Vector3.UP) * Quaternion(slopeRotAxis, rotation)*0.5
+		position += ((mask-$HitBox.shape.size)*Vector3.UP) * Quaternion(slopeRotAxis, rotation).normalized()*0.5
 	
 	$HitBox.shape.size = mask
 
@@ -1389,7 +1389,7 @@ func action_water_run_handle():
 	var dash = $WaterSurface
 	# check for water (check that collision has the water tag)
 	var touchWater = false
-	var colCheck = move_and_collide(Vector3.DOWN * Quaternion(slopeRotAxis, rotation),true)
+	var colCheck = move_and_collide(Vector3.DOWN * Quaternion(slopeRotAxis, rotation),true).normalized()
 	if colCheck:
 		touchWater = colCheck.get_collider().get_collision_layer_value(23)
 	

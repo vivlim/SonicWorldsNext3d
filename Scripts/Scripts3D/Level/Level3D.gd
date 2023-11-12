@@ -38,7 +38,7 @@ func _ready():
 		Global.hardBorderBottom  = defaultBottomBoundry
 	
 	level_reset_data(false)
-	
+	$Camera3D.make_current()
 	wasLoaded = true
 
 # used for stage starts, also used for returning from special stages
