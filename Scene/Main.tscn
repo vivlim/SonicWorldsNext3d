@@ -136,24 +136,20 @@ _data = {
 [sub_resource type="QuadMesh" id="QuadMesh_r7ev2"]
 size = Vector2(3.2, 2.24)
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_7qukk"]
-viewport_path = NodePath("SonicWorldsNextViewport")
+[sub_resource type="ViewportTexture" id="ViewportTexture_oft5c"]
+viewport_path = NodePath("SceneLoader")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fqits"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_52fuv"]
 resource_local_to_scene = true
-specular_mode = 2
-disable_ambient_light = true
-albedo_texture = SubResource("ViewportTexture_7qukk")
+albedo_texture = SubResource("ViewportTexture_oft5c")
+albedo_texture_force_srgb = true
 
 [node name="Main" type="Node3D"]
 script = ExtResource("2")
 
-[node name="SonicWorldsNextViewport" type="SubViewport" parent="."]
+[node name="SceneLoader" type="SubViewport" parent="."]
 
-[node name="SceneLoader" type="Node" parent="SonicWorldsNextViewport"]
-process_mode = 1
-
-[node name="PoweredByWorlds" parent="SonicWorldsNextViewport/SceneLoader" instance=ExtResource("4")]
+[node name="PoweredByWorlds" parent="SceneLoader" instance=ExtResource("4")]
 
 [node name="Music" type="Node" parent="."]
 process_mode = 1
@@ -203,7 +199,7 @@ libraries = {
 
 [node name="ViewportPlane" type="MeshInstance3D" parent="."]
 mesh = SubResource("QuadMesh_r7ev2")
-surface_material_override/0 = SubResource("StandardMaterial3D_fqits")
+surface_material_override/0 = SubResource("StandardMaterial3D_52fuv")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.46497)
