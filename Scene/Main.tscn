@@ -137,17 +137,19 @@ _data = {
 size = Vector2(3.2, 2.24)
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_oft5c"]
-viewport_path = NodePath("SceneLoader")
+viewport_path = NodePath("Scene2D")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_52fuv"]
 resource_local_to_scene = true
+diffuse_mode = 1
+specular_mode = 2
 albedo_texture = SubResource("ViewportTexture_oft5c")
 albedo_texture_force_srgb = true
 
 [node name="Main" type="Node3D"]
 script = ExtResource("2")
 
-[node name="SceneLoader" type="SubViewport" parent="."]
+[node name="SceneLoader" type="Node" parent="."]
 
 [node name="PoweredByWorlds" parent="SceneLoader" instance=ExtResource("4")]
 
@@ -205,6 +207,12 @@ surface_material_override/0 = SubResource("StandardMaterial3D_52fuv")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.46497)
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Camera3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775775, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775775, 1.06575)
+omni_range = 20.0
+omni_attenuation = 0.353554
+
+[node name="Scene2D" type="SubViewport" parent="."]
+
+[node name="Scene3D" type="Node3D" parent="."]
 
 [connection signal="finished" from="Music/Life" to="." method="_on_Life_finished"]

@@ -80,7 +80,7 @@ func _input(event):
 	# reset game if F2 is pressed (this button can be changed in project settings)
 	if event.is_action_pressed("ui_reset"):
 		reset_game()
-	$SceneLoader.push_input(event)
+	$Scene2D.push_input(event)
 
 # reset game function
 func reset_game():
@@ -132,6 +132,10 @@ func change_scene_to_file(scene = null, fadeOut = "", fadeIn = "", length = 1, s
 	# clear scene
 	for i in $SceneLoader.get_children():
 		i.queue_free()
+	for i in $Scene2D.get_children():
+		i.queue_free()
+	for i in $Scene3D.get_children():
+		i.queue_free()
 	
 	await get_tree().process_frame
 	# reset data level data, if reset data is true
@@ -172,6 +176,12 @@ func change_scene_to_file(scene = null, fadeOut = "", fadeIn = "", length = 1, s
 			# check there's not a stored scene first
 			if !is_instance_valid(Global.stageInstanceMemory):
 				Global.stageLoadMemory = lastScene
+				
+	for i in $SceneLoader.get_children():
+		if i is Node2D:
+			i.reparent($Scene2D)
+		elif i is Node3D:
+			i.reparent($Scene3D)
 	
 	# play fade in animation if it's not blank
 	if fadeIn != "":
