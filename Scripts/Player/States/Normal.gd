@@ -161,12 +161,13 @@ func _process(delta):
 		else:
 			parent.animator.play("peelOut")
 	
-	if parent.lastActiveAnimation == "crouch":
-		parent.get_node("HitBox").shape.size = parent.currentHitbox.CROUCH
-		parent.get_node("HitBox").position = parent.hitBoxOffset.crouch
-	else:
-		parent.get_node("HitBox").position = parent.hitBoxOffset.normal
-		parent.get_node("HitBox").shape.size = parent.currentHitbox.NORMAL
+	# todo restore hitbox size changes for different states
+#	if parent.lastActiveAnimation == "crouch":
+#		parent.get_node("HitBox").shape.size = parent.currentHitbox.CROUCH
+#		parent.get_node("HitBox").position = parent.hitBoxOffset.crouch
+#	else:
+#		parent.get_node("HitBox").position = parent.hitBoxOffset.normal
+#		parent.get_node("HitBox").shape.size = parent.currentHitbox.NORMAL
 	
 	if parent.inputs[parent.INPUTS.XINPUT] != 0 and !skid:
 		parent.direction = parent.inputs[parent.INPUTS.XINPUT]

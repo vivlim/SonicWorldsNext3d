@@ -1199,7 +1199,7 @@ func _on_PlayerAnimation_animation_started(anim_name):
 			animator.speed_scale = 1
 		# reset the center offset
 		if centerReference != null:
-			centerReference.position = Vector2.ZERO
+			centerReference.position = Vector3.ZERO
 		animator.advance(0)
 
 
@@ -1390,7 +1390,7 @@ func action_water_run_handle():
 	var dash = $WaterSurface
 	# check for water (check that collision has the water tag)
 	var touchWater = false
-	var colCheck = move_and_collide(Vector3.DOWN * Quaternion(slopeRotAxis, rotation),true).normalized()
+	var colCheck = move_and_collide(Vector3.DOWN * Quaternion(slopeRotAxis, rotation.normalized()),true)
 	if colCheck:
 		touchWater = colCheck.get_collider().get_collision_layer_value(23)
 	

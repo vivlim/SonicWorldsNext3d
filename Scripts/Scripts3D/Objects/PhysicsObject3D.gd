@@ -17,7 +17,7 @@ var lastMovement2d = Vector2(0, 0)
 @export var rotation2d = 0.0
 @export var gameplayPlaneRot = 0.0
 @export var slopeRotAxis = Vector3(0, 0, 1)
-@export var pixelSize = 0.01 # wild guess.
+@export var pixelSize = 1 # wild guess.
 
 func Update3DRotation():
 #	var current = Quaternion($ViewportPlane.transform.basis).normalized()
@@ -295,7 +295,7 @@ func _physics_process(delta):
 				# Do a check that we're not in the middle of a rotation, otherwise the player can get caught on outter curves (more noticable on higher physics frame rates)
 				if snap_angle(angle) == snap_angle(rotation2d):
 					var idk = TranslateVec2(Vector2(0,yGroundDiff).rotated(rotation2d))
-					position += (rayHitVec-(normHitVec*(($HitBox.shape.size.y/2)+0.25))-idk)
+					position += (rayHitVec-(normHitVec*(($HitBox.shape.size.y/2)+0.25))-idk) #sus
 				else:
 					# if the angle doesn't match the current rotation, move toward the slope angle unsnapped instead of following the raycast
 					normHitVec = -Vector2.LEFT.rotated(rayHitVec2d.normalized().angle())
@@ -326,7 +326,13 @@ func _physics_process(delta):
 		if ground:
 			getVert = get_nearest_vertical_sensor()
 			if getVert:
-				angle = deg_to_rad(snapped(rad_to_deg(getVert.get_collision_normal().rotated(deg_to_rad(90)).angle()),0.001))
+				var vertCollisionNormal = getVert.get_collision_normal()
+				var vertCollisionNormal2d = Translate3DTo2D(vertCollisionNormal)
+				var rotated = vertCollisionNormal2d.rotated(deg_to_rad(90)).angle()
+				var deg = rad_to_deg(rotated)
+				var snapped = snapped(deg, 0.001)
+				angle = deg_to_rad(snapped)
+				
 		
 		# Emit Signals
 		if groundMemory != ground:
@@ -348,6 +354,8 @@ func _physics_process(delta):
 		
 		update_sensors()
 		
+		var remainingLength = moveRemaining.length()
+		var normalized = moveRemaining.normalized()
 		moveRemaining -= moveRemaining.normalized()*min(moveStepLength,moveRemaining.length())
 		force_update_transform()
 		
