@@ -176,14 +176,14 @@ func update_sensors():
 	# if the player is on a completely flat surface then move the sensor down 8 pixels
 	# viv todo: 8 pixels is probably not right in 3d.
 	var horizontalSensorPosition2d = Translate3DTo2D(horizontalSensor.position)
-	horizontalSensorPosition2d.y = 8*pixelSize*int(round(rad_to_deg(angle)) == round(rad_to_deg(gravityAngle)) and ground)
+	horizontalSensorPosition2d.y = -8*pixelSize*int(round(rad_to_deg(angle)) == round(rad_to_deg(gravityAngle)) and ground)
 	horizontalSensor.position = TranslateVec2(horizontalSensorPosition2d)
 	
 	# slop sensor
 	var slopeCheckPosition2d = Translate3DTo2D(slopeCheck.position)
 	slopeCheckPosition2d.y = shape.x
 	slopeCheck.position = TranslateVec2(slopeCheckPosition2d)
-	slopeCheck.target_position = TranslateVec2(Vector2((shape.y+extendFloorLook)*sign(rotation2d-angle),0))
+	slopeCheck.target_position = TranslateVec2(Vector2((shape.y-extendFloorLook)*sign(rotation2d-angle),0))
 	
 	# viv todo: i thiiiink the rotation of these sensors is used to make them all align but their y value is pointed in the direction that matters
 	var rotationSnap3d = Quaternion(slopeRotAxis, rotationSnap) * Vector3(0, 1, 0).normalized() # gonna go with an upwards facing vector
@@ -195,10 +195,10 @@ func update_sensors():
 	# set collission mask values
 	for i in sensorList:
 		var rotatedTarget2d = Translate3DTo2D(i.target_position).rotated(rotationSnap)
-		i.set_collision_mask_value(1,rotatedTarget2d.y > 0)
-		i.set_collision_mask_value(2,rotatedTarget2d.x > 0)
-		i.set_collision_mask_value(3,rotatedTarget2d.x < 0)
-		i.set_collision_mask_value(4,rotatedTarget2d.y < 0)
+		#i.set_collision_mask_value(1,rotatedTarget2d.y > 0)
+		#i.set_collision_mask_value(2,rotatedTarget2d.x > 0)
+		#i.set_collision_mask_value(3,rotatedTarget2d.x < 0)
+		#i.set_collision_mask_value(4,rotatedTarget2d.y < 0)
 		# reset layer masks
 		i.set_collision_mask_value(5,false)
 		i.set_collision_mask_value(6,false)
@@ -265,7 +265,7 @@ func _physics_process(delta):
 		if horizontalSensor.is_colliding():
 			#  Calculate the move distance vectorm, then move
 			var rayHitVec = (horizontalSensor.get_collision_point()-horizontalSensor.global_position)
-			var normHitVec = TranslateVec2(-Vector2.LEFT.rotated(snap_angle(rayHitVec.normalized().angle())))
+			var normHitVec = TranslateVec2(-Vector2.LEFT.rotated(snap_angle(Translate3DTo2D(rayHitVec.normalized()).angle())))
 			position += (rayHitVec-(normHitVec*(pushRadius)))
 		
 		# Floor sensors
@@ -310,6 +310,7 @@ func _physics_process(delta):
 		if slopeCheck.is_colliding():
 			var getSlope = snap_angle(slopeCheck.get_collision_normal() * Quaternion(slopeRotAxis, deg_to_rad(90))).normalized() # todo: confirm radians is right for 3d, and that this is ok
 			# compare slope to current angle, check that it's not going to result in our current angle if we rotated
+			print(getSlope)
 			var getSlope2d = Translate3DTo2D(getSlope)
 			if getSlope2d != rotation2d:
 				rotation2d = snap_angle(angle)
