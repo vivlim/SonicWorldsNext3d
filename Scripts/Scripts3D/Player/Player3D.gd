@@ -418,7 +418,9 @@ func calculate_input(event, action = "gm_action"):
 
 
 func _process(delta):
-	
+	sprite.scale.x = 300
+	sprite.scale.y = 300
+	sprite.scale.z = 300
 	# Player 1 input settings and partner AI
 	if playerControl == 1:
 		# Input memory - write the player's input to the inputMemory queue at the current queue position
@@ -1390,7 +1392,7 @@ func action_water_run_handle():
 	var dash = $WaterSurface
 	# check for water (check that collision has the water tag)
 	var touchWater = false
-	var colCheck = move_and_collide(Vector3.DOWN * Quaternion(slopeRotAxis, rotation.normalized()),true)
+	var colCheck = move_and_collide(Vector3.DOWN * Quaternion(slopeRotAxis, rotation).normalized(),true)
 	if colCheck:
 		touchWater = colCheck.get_collider().get_collision_layer_value(23)
 	

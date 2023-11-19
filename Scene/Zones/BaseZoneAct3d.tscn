@@ -1,8 +1,9 @@
-[gd_scene load_steps=259 format=3 uid="uid://bflnqu1d5tdw2"]
+[gd_scene load_steps=260 format=3 uid="uid://bflnqu1d5tdw2"]
 
 [ext_resource type="Script" path="res://Scripts/Scripts3D/Level/Level3D.gd" id="1_t21p7"]
 [ext_resource type="PackedScene" uid="uid://qs5dmtxxf1w1" path="res://Scene/Presentation/Title.tscn" id="2_6qv0b"]
 [ext_resource type="PackedScene" uid="uid://c30uceea18q1w" path="res://Entities/Misc/HUD.tscn" id="3_1klof"]
+[ext_resource type="Script" path="res://Scripts/Scripts3D/HitBox3DTranslate.gd" id="5_4a1qx"]
 [ext_resource type="Script" path="res://Scripts/Scripts3D/Player/Player3D.gd" id="5_yvm1l"]
 [ext_resource type="Script" path="res://Scripts/Player/States/Normal.gd" id="6_dlq8s"]
 [ext_resource type="Script" path="res://Scripts/Player/States/Air.gd" id="7_u3p5q"]
@@ -70,14 +71,6 @@
 [ext_resource type="AudioStream" uid="uid://c2agly02ferrw" path="res://Audio/SFX/Player/WaterRun.wav" id="68_2gdmx"]
 [ext_resource type="AudioStream" uid="uid://buu4anko53vx2" path="res://Audio/SFX/Objects/ChemJump.wav" id="69_q8w73"]
 [ext_resource type="Texture2D" uid="uid://b1k615l251fu5" path="res://Graphics/Misc/WaterSurfaceSplash.png" id="70_si0k3"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wx0dy"]
-albedo_color = Color(0, 0.2, 1, 1)
-
-[sub_resource type="SphereMesh" id="SphereMesh_ejo0d"]
-material = SubResource("StandardMaterial3D_wx0dy")
-radius = 16.0
-height = 32.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_lisdn"]
 radius = 8.0
@@ -2437,6 +2430,14 @@ emission_energy_multiplier = 1.1
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_1elqv"]
 points = PackedVector3Array(-2000, -0.5, -2000, -2000, 0.5, -2000, 2000, -0.5, -2000, -2000, -0.5, 2000, -2000, 0.5, 2000, 2000, 0.5, -2000, 2000, -0.5, 2000, 2000, 0.5, 2000)
 
+[sub_resource type="CylinderMesh" id="CylinderMesh_wkj7y"]
+top_radius = 80.0
+bottom_radius = 80.0
+height = 500.0
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_w8ecl"]
+points = PackedVector3Array(-80, -250, 0, -79.6241, -250, -7.84651, -79.6241, -250, 7.83086, -80, 250, 0, -78.4651, -250, -15.6147, -79.6241, 250, -7.84651, -78.4651, -250, 15.5991, -79.6241, 250, 7.83086, -76.5701, -250, -23.2263, -78.4651, 250, -15.6147, -76.5701, -250, 23.2106, -78.4651, 250, 15.5991, -73.9233, -250, -30.6186, -76.5701, 250, -23.2263, -73.9233, -250, 30.603, -76.5701, 250, 23.2106, -70.556, -250, -37.7134, -73.9233, 250, -30.6186, -70.556, -250, 37.6977, -73.9233, 250, 30.603, -66.5309, -250, -44.4479, -70.556, 250, -37.7134, -66.5309, -250, 44.4323, -70.556, 250, 37.6977, -61.8481, -250, -50.7596, -66.5309, 250, -44.4479, -61.8481, -250, 50.7439, -66.5309, 250, 44.4323, -56.5701, -250, -56.5701, -61.8481, 250, -50.7596, -56.5701, -250, 56.5544, -61.8481, 250, 50.7439, -50.7596, -250, -61.8481, -56.5701, 250, -56.5701, -50.7596, -250, 61.8324, -56.5701, 250, 56.5544, -44.4479, -250, -66.5309, -50.7596, 250, -61.8481, -44.4479, -250, 66.5153, -50.7596, 250, 61.8324, -37.7134, -250, -70.556, -44.4479, 250, -66.5309, -37.7134, -250, 70.5403, -44.4479, 250, 66.5153, -30.6186, -250, -73.9233, -37.7134, 250, -70.556, -30.6186, -250, 73.9076, -37.7134, 250, 70.5403, -23.2263, -250, -76.5701, -30.6186, 250, -73.9233, -23.2263, -250, 76.5544, -30.6186, 250, 73.9076, -15.6147, -250, -78.4651, -23.2263, 250, -76.5701, -15.6147, -250, 78.4495, -23.2263, 250, 76.5544, -7.84651, -250, -79.6241, -15.6147, 250, -78.4651, -7.84651, -250, 79.6085, -15.6147, 250, 78.4495, 0, -250, -80, -7.84651, 250, -79.6241, 0, -250, 80, -7.84651, 250, 79.6085, 7.83086, -250, -79.6241, 0, 250, -80, 7.83086, -250, 79.6085, 0, 250, 80, 15.5991, -250, -78.4651, 7.83086, 250, -79.6241, 15.5991, -250, 78.4495, 7.83086, 250, 79.6085, 23.2106, -250, -76.5701, 15.5991, 250, -78.4651, 23.2106, -250, 76.5544, 15.5991, 250, 78.4495, 30.603, -250, -73.9233, 23.2106, 250, -76.5701, 30.603, -250, 73.9076, 23.2106, 250, 76.5544, 37.6977, -250, -70.556, 30.603, 250, -73.9233, 37.6977, -250, 70.5403, 30.603, 250, 73.9076, 44.4323, -250, -66.5309, 37.6977, 250, -70.556, 44.4323, -250, 66.5153, 37.6977, 250, 70.5403, 50.7439, -250, -61.8481, 44.4323, 250, -66.5309, 50.7439, -250, 61.8324, 44.4323, 250, 66.5153, 56.5544, -250, -56.5701, 50.7439, 250, -61.8481, 56.5544, -250, 56.5544, 50.7439, 250, 61.8324, 61.8324, -250, -50.7596, 56.5544, 250, -56.5701, 61.8324, -250, 50.7439, 56.5544, 250, 56.5544, 66.5153, -250, -44.4479, 61.8324, 250, -50.7596, 66.5153, -250, 44.4323, 61.8324, 250, 50.7439, 70.5403, -250, -37.7134, 66.5153, 250, -44.4479, 70.5403, -250, 37.6977, 66.5153, 250, 44.4323, 73.9076, -250, -30.6186, 70.5403, 250, -37.7134, 73.9076, -250, 30.603, 70.5403, 250, 37.6977, 76.5544, -250, -23.2263, 73.9076, 250, -30.6186, 76.5544, -250, 23.2106, 73.9076, 250, 30.603, 78.4495, -250, -15.6147, 76.5544, 250, -23.2263, 78.4495, -250, 15.5991, 76.5544, 250, 23.2106, 79.6085, -250, -7.84651, 78.4495, 250, -15.6147, 79.6085, -250, 7.83086, 78.4495, 250, 15.5991, 80, -250, 0, 79.6085, 250, -7.84651, 79.6085, 250, 7.83086, 80, 250, 0)
+
 [sub_resource type="Environment" id="Environment_w5kd4"]
 ambient_light_color = Color(0.639216, 0.639216, 0.639216, 1)
 
@@ -2463,16 +2464,12 @@ collision_layer = 4096
 collision_mask = 8192
 script = ExtResource("5_yvm1l")
 
-[node name="blueball" type="MeshInstance3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69, -734, 0)
-mesh = SubResource("SphereMesh_ejo0d")
-skeleton = NodePath("../..")
-
 [node name="HitBoxMeshInstance" type="MeshInstance3D" parent="Player"]
 mesh = SubResource("SphereMesh_lisdn")
 
 [node name="HitBox" type="CollisionShape3D" parent="Player"]
 shape = SubResource("BoxShape3D_4enu2")
+script = ExtResource("5_4a1qx")
 
 [node name="States" type="Node" parent="Player"]
 
@@ -2571,7 +2568,12 @@ libraries = {
 }
 
 [node name="Sprite2D" type="Sprite3D" parent="Player/Sonic"]
-offset = Vector2(0, -4)
+offset = Vector2(0, 7)
+pixel_size = 0.5
+billboard = 2
+no_depth_test = true
+texture_filter = 1
+render_priority = 1
 texture = ExtResource("24_x1u7x")
 hframes = 16
 vframes = 18
@@ -2842,7 +2844,7 @@ frame_progress = 0.400739
 [node name="Stage" type="Node3D" parent="."]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Stage"]
-transform = Transform3D(0.998204, -0.0598988, 3.69053e-16, 0.0598987, 0.998205, -3.27269e-16, -3.48787e-16, 3.48787e-16, 1, 0, -638.512, 0)
+transform = Transform3D(0.998204, -0.0598988, 3.69053e-16, 0.0598987, 0.998205, -3.27269e-16, -3.48787e-16, 3.48787e-16, 1, 0, -275.786, 0)
 mesh = SubResource("BoxMesh_0hp7p")
 surface_material_override/0 = SubResource("StandardMaterial3D_twfje")
 
@@ -2853,9 +2855,20 @@ transform = Transform3D(1, 0, 0, 0, 0.985747, -0.168231, 0, 0.168231, 0.985747, 
 transform = Transform3D(1, 0, 0, 0, 0.985748, 0.168231, 0, -0.168231, 0.985748, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_1elqv")
 
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Stage"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 204.215, -295.1, 0)
+mesh = SubResource("CylinderMesh_wkj7y")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Stage/MeshInstance3D2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Stage/MeshInstance3D2/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_w8ecl")
+
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -239.049, 1347.22)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -239.049, 741.345)
 current = true
+fov = 42.6
+size = 573.867
 far = 40000.0
 
 [node name="SpotLight3D" type="SpotLight3D" parent="."]

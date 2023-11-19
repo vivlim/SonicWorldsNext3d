@@ -169,12 +169,12 @@ func set_anim(player, lookUp, lookDown):
 		player.animator.advance(seekTime)
 		if targetAnim == "yRotationLookDown":
 			#player.set_hitbox(player.currentHitbox.CROUCH, true)
-			player.get_node("HitBox").shape.size = player.currentHitbox.CROUCH
+			player.get_node("HitBox").shape2d.size = player.currentHitbox.CROUCH
 			player.get_node("HitBox").position = player.hitBoxOffset.crouch
 		else:
 			#player.set_hitbox(player.currentHitbox.NORMAL, true)	
 			player.get_node("HitBox").position = player.hitBoxOffset.normal
-			player.get_node("HitBox").shape.size = player.currentHitbox.NORMAL
+			player.get_node("HitBox").shape2d.size = player.currentHitbox.NORMAL
 
 func _process(delta):
 	upHeld = false

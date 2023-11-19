@@ -27,7 +27,9 @@ var playerIdles = [
 func state_exit():
 	skid = false
 	parent.get_node("HitBox").position = parent.hitBoxOffset.normal
-	parent.get_node("HitBox").shape.size = parent.currentHitbox.NORMAL
+	parent.get_node("HitBox").shape2d.size = parent.currentHitbox.NORMAL
+#	var n = CollisionShape3D.new()
+	
 	
 	lookTimer = 0
 	parent.sfx[29].stop()
@@ -163,11 +165,11 @@ func _process(delta):
 	
 	# todo restore hitbox size changes for different states
 #	if parent.lastActiveAnimation == "crouch":
-#		parent.get_node("HitBox").shape.size = parent.currentHitbox.CROUCH
+#		parent.get_node("HitBox").shape2d.size = parent.currentHitbox.CROUCH
 #		parent.get_node("HitBox").position = parent.hitBoxOffset.crouch
 #	else:
 #		parent.get_node("HitBox").position = parent.hitBoxOffset.normal
-#		parent.get_node("HitBox").shape.size = parent.currentHitbox.NORMAL
+#		parent.get_node("HitBox").shape2d.size = parent.currentHitbox.NORMAL
 	
 	if parent.inputs[parent.INPUTS.XINPUT] != 0 and !skid:
 		parent.direction = parent.inputs[parent.INPUTS.XINPUT]
@@ -243,7 +245,8 @@ func _on_SkidDustTimer_timeout():
 		if !skid:
 			$"../../SkidDustTimer".stop()
 		else:
-			var dust = parent.Particle.instantiate()
-			dust.play("SkidDust")
-			dust.global_position = parent.global_position+(Vector2.DOWN*16).rotated(deg_to_rad(parent.spriteRotation-90))
-			parent.get_parent().add_child(dust)
+			pass # viv removed dust
+			#var dust = parent.Particle.instantiate()
+			#dust.play("SkidDust")
+			#dust.global_position = parent.global_position+(Vector3.DOWN*16).rotated(deg_to_rad(parent.spriteRotation-90))
+			#parent.get_parent().add_child(dust)

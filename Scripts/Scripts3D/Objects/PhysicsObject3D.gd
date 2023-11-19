@@ -451,8 +451,9 @@ func get_nearest_vertical_sensor():
 func disconect_from_floor(force = false):
 	if ground or force:
 		# convert velocity
-		movement = movement * Quaternion(slopeRotAxis, angle-gravityAngle).normalized()
-		movement2d = Translate3DTo2D(movement)
+		#movement = movement * Quaternion(slopeRotAxis, angle-gravityAngle).normalized()
+		#movement2d = Translate3DTo2D(movement)
+		movement2d = movement2d.rotated(angle-gravityAngle)
 		angle = gravityAngle
 		ground = false
 		if (snap_angle(rotation2d) != snap_angle(gravityAngle)):

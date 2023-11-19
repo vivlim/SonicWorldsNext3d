@@ -204,11 +204,12 @@ func _physics_process(delta):
 					parent.lock_camera(16.0/60.0)
 					
 					# drop dash dust
-					var dust = parent.Particle.instantiate()
-					dust.play("DropDash")
-					dust.global_position = parent.global_position+Vector2(0,2).rotated(parent.rotation)
-					dust.scale.x = parent.direction
-					parent.get_parent().add_child(dust)
+					# viv: removed dust
+				#	var dust = parent.Particle.instantiate()
+				#	dust.play("DropDash")
+				#	dust.global_position = parent.global_position+Vector2(0,2).rotated(parent.rotation)
+				#	dust.scale.x = parent.direction
+				#	parent.get_parent().add_child(dust)
 				# Amys drop dash handle
 				elif parent.character == parent.CHARACTERS.AMY:
 					# stop vertical movement downard
